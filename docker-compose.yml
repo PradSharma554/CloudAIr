@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cloudair
+      POSTGRES_PASSWORD: cloudair
+      POSTGRES_DB: cloudair
+    ports:
+      - "5433:5432"
+    volumes:
+      - cloudair-pgdata:/var/lib/postgresql/data
+
+volumes:
+  cloudair-pgdata:

@@ -1,0 +1,22 @@
+# Render Blueprint — deploy with "New > Blueprint" pointing at this repo.
+# Free plan: single instance, 512MB, spins down after 15 min idle.
+services:
+  - type: web
+    name: cloudair
+    runtime: go
+    plan: free
+    rootDir: server
+    buildCommand: go build -o cloudair ./cmd/cloudair
+    startCommand: ./cloudair
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATABASE_URL
+        sync: false # paste your Neon connection string
+      - key: API_JWT_SECRET
+        sync: false # same value as the Vercel app's API_JWT_SECRET
+      - key: INTERNAL_TOKEN
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false # optional — fallback mode without it
+      - key: PUBLIC_BASE_URL
+        sync: false # e.g. https://cloudair.onrender.com (set after first deploy)

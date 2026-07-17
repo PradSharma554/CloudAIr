@@ -1,0 +1,5 @@
+.DS_Store
+server/.env
+server/cloudair
+web/.env
+web/.env*.local

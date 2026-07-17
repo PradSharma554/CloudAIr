@@ -1,0 +1,36 @@
+# Two free-tier survival jobs:
+#  - keepalive: pings /healthz every 10 minutes so Render doesn't spin down.
+#    NOTE: keeping a free instance permanently warm is a gray area under
+#    Render's ToS. Delete the keepalive job (or this file) if you'd rather
+#    accept ~30-60s cold starts.
+#  - recrawl: daily — resumes stalled crawls, recrawls all verified sites,
+#    rolls up analytics, prunes raw events past 30-day retention.
+#
+# Required repo settings (Settings > Secrets and variables > Actions):
+#  - variable BACKEND_URL   e.g. https://cloudair.onrender.com
+#  - secret  INTERNAL_TOKEN matching the Render env var
+name: keepalive-recrawl
+
+on:
+  schedule:
+    - cron: "*/10 * * * *" # keepalive
+    - cron: "17 4 * * *"   # daily recrawl + rollup (04:17 UTC)
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    if: github.event.schedule == '*/10 * * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping healthz
+        run: curl -sS --max-time 90 "${{ vars.BACKEND_URL }}/healthz" || true
+
+  recrawl:
+    if: github.event.schedule != '*/10 * * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger recrawl + rollup
+        run: |
+          curl -sS --max-time 120 -X POST \
+            -H "X-Internal-Token: ${{ secrets.INTERNAL_TOKEN }}" \
+            "${{ vars.BACKEND_URL }}/internal/recrawl"
