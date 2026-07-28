@@ -9,7 +9,7 @@ limiting, and an analytics dashboard showing exactly which agents visited and
 what they read. An x402-style paywall (charge agents for access) is stubbed
 and coming next.
 
-Runs **entirely on free tiers**: Go API on Render, Next.js dashboard on
+Runs **entirely on free tiers**: TypeScript/Express API on Render, Next.js dashboard on
 Vercel, Neon Postgres, Gemini free tier for summaries. $0/month.
 
 ```
@@ -31,21 +31,22 @@ Vercel, Neon Postgres, Gemini free tier for summaries. $0/month.
 
 | Path | What |
 |---|---|
-| `server/` | Go API: crawler, llms.txt generator, MCP servers, agent ID, rate limits, analytics |
+| `server/` | TypeScript + Express API: crawler, llms.txt generator, MCP servers, agent ID, rate limits, analytics |
 | `web/` | Next.js 15 dashboard: OAuth login, site wizard, analytics charts, settings |
 | `docs/` | Architecture, agent signature maintenance, x402 design |
 | `.github/workflows/` | CI + free cron (keepalive, weekly recrawl, analytics rollup) |
 
 ## Local development
 
-Requirements: Go 1.26+, Node 18+, Docker.
+Requirements: Node 18.18+ (20 recommended), Docker.
 
 ```bash
 # 1. Postgres
 make db-up
 
-# 2. Go API (terminal 1) — migrations run automatically on boot
+# 2. API server (terminal 1) — migrations run automatically on boot
 cp server/.env.example server/.env   # defaults work out of the box
+cd server && npm install && cd ..
 make server
 
 # 3. Dashboard (terminal 2)
@@ -60,8 +61,8 @@ llms.txt generator uses its non-LLM fallback (meta descriptions + path-based
 sections), so everything works offline.
 
 ```bash
-make test   # Go unit tests
-make lint   # go vet
+make test   # unit tests (vitest)
+make lint   # typecheck (tsc)
 ```
 
 ## Deploy (free tiers)
@@ -70,7 +71,7 @@ make lint   # go vet
 1. Create a project at [neon.tech](https://neon.tech) (free tier, 0.5 GB).
 2. Copy the pooled connection string — this is `DATABASE_URL`.
 
-### 2. Render (Go API)
+### 2. Render (API server)
 1. Push this repo to GitHub.
 2. Render → **New → Blueprint** → select the repo (uses `server/render.yaml`).
 3. Set env vars: `DATABASE_URL` (Neon), `API_JWT_SECRET` (any long random

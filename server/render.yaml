@@ -3,13 +3,15 @@
 services:
   - type: web
     name: cloudair
-    runtime: go
+    runtime: node
     plan: free
     rootDir: server
-    buildCommand: go build -o cloudair ./cmd/cloudair
-    startCommand: ./cloudair
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
     healthCheckPath: /healthz
     envVars:
+      - key: NODE_VERSION
+        value: "20"
       - key: DATABASE_URL
         sync: false # paste your Neon connection string
       - key: API_JWT_SECRET

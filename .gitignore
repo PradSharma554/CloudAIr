@@ -1,5 +1,7 @@
 .DS_Store
+.env
 server/.env
-server/cloudair
+server/node_modules/
+server/dist/
 web/.env
 web/.env*.local

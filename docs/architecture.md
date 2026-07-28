@@ -1,6 +1,6 @@
 # CloudAIr architecture
 
-One Go binary (`server/cmd/cloudair`) serves three surfaces:
+One Node.js process (TypeScript + Express, entrypoint `server/src/index.ts`) serves three surfaces:
 
 1. **Agent-facing site endpoints** — `/sites/{slug}/llms.txt`,
    `/sites/{slug}/llms-full.txt`, `/sites/{slug}/pages/*` (markdown mirrors),
@@ -11,33 +11,32 @@ One Go binary (`server/cmd/cloudair`) serves three surfaces:
 
 ## The SiteResolver seam (reverse-proxy mode later)
 
-`internal/httpapi/resolver.go` defines:
+`server/src/http/resolver.ts` defines the seam:
 
-```go
-type SiteResolver interface {
-    Resolve(r *http.Request) (site *store.Site, rest string, ok bool)
-}
-```
-
-- `PathResolver` matches `/sites/{slug}/...` (MVP hosted-endpoints mode).
-- `HostResolver` matches `<slug><HOST_SUFFIX>` hosts; `hostRewrite` in
-  `server.go` canonicalizes those requests onto the path form, so one router
-  serves both modes. Set `HOST_SUFFIX=.yourdomain.dev` to enable.
-- Full reverse-proxy mode later = HostResolver for customer domains + a
+- `SiteCache.bySlug()` resolves `/sites/{slug}/...` paths (MVP
+  hosted-endpoints mode), with a 30s TTL cache in front of Postgres.
+- `hostSlug()` matches `<slug><HOST_SUFFIX>` hosts (e.g.
+  `example-com.cloudair.dev`); a rewrite middleware in `app.ts` canonicalizes
+  those requests onto the path form, so one router serves both modes. Set
+  `HOST_SUFFIX=.yourdomain.dev` to enable.
+- Full reverse-proxy mode later = host resolution for customer domains + a
   catch-all handler that forwards non-agent traffic to the origin. No
-  downstream handler parses URLs for the site — they read it from context.
+  downstream handler parses URLs for the site — they read it from the request
+  context (`res.locals`).
 
 Agent-facing middleware chain (in order):
-`siteCtx → agentIdentify → rateLimit → record → paywall → handler`
+`siteCtx → agentIdentify → record → rateLimit → paywall → handler`
+(`record` sits before the limiter so blocked 429s show up in analytics too.)
 
-## Auth bridge (why the Go API never sees Auth.js cookies)
+## Auth bridge (why the API never sees Auth.js cookies)
 
 Auth.js v5 session cookies are **encrypted JWEs**, not verifiable JWTs.
-Instead of sharing Auth.js internals with Go, the dashboard proxies every API
-call through `web/app/api/backend/[...path]/route.ts`, which reads the session
-server-side and mints a **5-minute HS256 JWT** (sub = `provider:providerId`)
-signed with the shared `API_JWT_SECRET`. The Go side
-(`internal/httpapi/authmw.go`) verifies it and lazily upserts the user row.
+Instead of coupling the API to Auth.js internals, the dashboard proxies every
+API call through `web/app/api/backend/[...path]/route.ts`, which reads the
+session server-side and mints a **5-minute HS256 JWT** (sub =
+`provider:providerId`) signed with the shared `API_JWT_SECRET`. The API side
+(`server/src/http/middleware.ts`, `requireAuth`) verifies it and lazily
+upserts the user row.
 
 ### Minting a dev JWT (API testing without OAuth)
 
@@ -55,7 +54,7 @@ new SignJWT({ email: 'dev@localhost', name: 'Dev' })
 
 ## Crawler lifecycle (Render free tier)
 
-Crawls run as goroutines inside the web service (no workers on the free
+Crawls run as async loops inside the web service (no workers on the free
 tier). After **every page** the crawler upserts the page row and writes a
 checkpoint (`crawls.checkpoint`: remaining frontier + visited set) plus a
 heartbeat. If the instance dies, the boot-time reaper flips `running` crawls
@@ -70,14 +69,14 @@ instead — llms.txt generation never fails on quota.
 
 ## Analytics pipeline
 
-Middleware → buffered channel (cap 1000, drop-on-full) → single writer
-goroutine → `pgx.CopyFrom` batch every 5 s / 100 events → flushed on SIGTERM.
+Middleware → in-memory buffer (cap 1000, drop-on-full) → timer-driven writer
+→ one multi-row INSERT every 5 s / 100 events → flushed on SIGTERM.
 The daily cron hit rolls raw events into `agent_requests_daily` and prunes
 raw rows older than 30 days.
 
 ## Agent identification
 
-`internal/agents/signatures.json` (embedded, ~30 entries) maps User-Agent
+`server/src/signatures.json` (~30 entries) maps User-Agent
 substrings to agent names/operators/purposes. Classes:
 
 - `declared-agent` — UA matches the table, or the request speaks MCP
@@ -91,9 +90,9 @@ To add a signature, edit the JSON — no code changes needed.
 
 ## Rate limiting
 
-In-memory token buckets (`x/time/rate`) in an LRU keyed by
+In-memory token buckets (hand-rolled, `lru-cache`-bounded) keyed by
 `{siteID}|{agentName-or-class}`. Per-site rules in Postgres, cached 60 s,
 precedence: exact agent → class → site `*` → global default (60 rpm/burst 10).
-Rule changes apply to live buckets via SetLimit/SetBurst. Single-instance
+Rule changes apply to live buckets (params re-checked on every allow). Single-instance
 in-memory is *correct* on Render free (n=1); the `Limiter` interface is the
 seam for a Redis implementation when scaling out.

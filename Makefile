@@ -12,19 +12,19 @@ db-down:
 
 # Targets source server/.env when present; DATABASE_URL above is the fallback.
 migrate:
-	cd server && set -a && { [ -f .env ] && . ./.env; } ; set +a && DATABASE_URL="$${DATABASE_URL:-$(DATABASE_URL)}" go run ./cmd/cloudair -migrate-only
+	cd server && set -a && { [ -f .env ] && . ./.env; } ; set +a && DATABASE_URL="$${DATABASE_URL:-$(DATABASE_URL)}" npx tsx src/index.ts --migrate-only
 
 server:
-	cd server && set -a && { [ -f .env ] && . ./.env; } ; set +a && DATABASE_URL="$${DATABASE_URL:-$(DATABASE_URL)}" go run ./cmd/cloudair
+	cd server && set -a && { [ -f .env ] && . ./.env; } ; set +a && DATABASE_URL="$${DATABASE_URL:-$(DATABASE_URL)}" npx tsx src/index.ts
 
 web:
 	cd web && npm run dev
 
 test:
-	cd server && go test ./...
+	cd server && npm test
 
 lint:
-	cd server && go vet ./...
+	cd server && npm run typecheck
 
 seed:
-	cd server && DATABASE_URL="$(DATABASE_URL)" go run ./cmd/cloudair -seed
+	cd server && DATABASE_URL="$(DATABASE_URL)" npx tsx src/index.ts --seed

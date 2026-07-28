@@ -1,6 +1,6 @@
 # Maintaining the agent signature table
 
-`server/internal/agents/signatures.json` is embedded at build time and maps
+`server/src/signatures.json` maps
 User-Agent substrings to known AI agents. Each entry:
 
 ```json
@@ -24,5 +24,5 @@ Good sources for new signatures:
 - <https://developers.google.com/search/docs/crawling-indexing/overview-google-crawlers>
 - community lists like `ai-robots-txt/ai.robots.txt` on GitHub
 
-After editing, run `go test ./internal/agents/` (validates the JSON parses
-and classification still works) and rebuild.
+After editing, run `npm test` in `server/` (validates the JSON parses and
+classification still works).
