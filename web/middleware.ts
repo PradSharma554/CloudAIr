@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
+// Public routes: the landing page and login. Everything else needs a session.
+const publicPaths = new Set(["/", "/login"]);
+
 export default auth((req) => {
   const { pathname } = req.nextUrl;
-  if (!req.auth && pathname !== "/login") {
+  if (!req.auth && !publicPaths.has(pathname)) {
     const url = new URL("/login", req.nextUrl);
     return NextResponse.redirect(url);
   }
