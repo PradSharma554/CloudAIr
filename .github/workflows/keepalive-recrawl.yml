@@ -22,8 +22,10 @@ jobs:
     if: github.event.schedule == '*/10 * * * *'
     runs-on: ubuntu-latest
     steps:
-      - name: Ping healthz
-        run: curl -sS --max-time 90 "${{ vars.BACKEND_URL }}/healthz" || true
+      - name: Ping liveness endpoint
+        # /ping (not /healthz): the deep check queries Neon and would keep its
+        # compute awake around the clock, exhausting free-tier CU-hours.
+        run: curl -sS --max-time 90 "${{ vars.BACKEND_URL }}/ping" || true
 
   recrawl:
     if: github.event.schedule != '*/10 * * * *'

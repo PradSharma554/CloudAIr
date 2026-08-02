@@ -60,6 +60,14 @@ export function buildApp(d: Deps): Express {
     });
   }
 
+  // Liveness only — deliberately touches nothing. Render's health checks and
+  // the keepalive cron hit this; on serverless Postgres (Neon), a health
+  // check that queries the database wakes its compute and burns the free
+  // tier's CU-hours around the clock. Deep checks live at /healthz.
+  app.get("/ping", (_req, res) => {
+    res.json({ status: "ok" });
+  });
+
   app.get("/healthz", wrap(async (_req, res) => {
     const size = await dbSizeBytes(d.pool).catch(() => 0);
     res.json({

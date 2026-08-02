@@ -8,7 +8,9 @@ services:
     rootDir: server
     buildCommand: npm ci && npm run build
     startCommand: npm start
-    healthCheckPath: /healthz
+    # /ping is DB-free liveness; /healthz queries Neon and would keep its
+    # compute awake 24/7 via Render's continuous health checks.
+    healthCheckPath: /ping
     envVars:
       - key: NODE_VERSION
         value: "20"

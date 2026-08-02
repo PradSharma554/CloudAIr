@@ -7,7 +7,9 @@ One Node.js process (TypeScript + Express, entrypoint `server/src/index.ts`) ser
    `/sites/{slug}/mcp` (Streamable HTTP MCP, stateless).
 2. **Dashboard API** — `/api/v1/*`, JWT-authenticated, called only by the
    Next.js proxy route.
-3. **Internal** — `/healthz`, `/internal/recrawl` (cron).
+3. **Internal** — `/ping` (DB-free liveness, used by Render health checks and
+   the keepalive cron so Neon's compute can sleep), `/healthz` (deep check:
+   database + storage gauge), `/internal/recrawl` (cron).
 
 ## The SiteResolver seam (reverse-proxy mode later)
 
