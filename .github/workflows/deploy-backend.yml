@@ -1,0 +1,26 @@
+# Render's GitHub App auto-deploy has proven unreliable for this repo, so we
+# trigger deploys ourselves: on any backend change, curl the service's Deploy
+# Hook (Render dashboard → Settings → Deploy Hook, stored as the
+# RENDER_DEPLOY_HOOK repo secret). Skips quietly if the secret isn't set.
+name: deploy-backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "server/**"
+
+jobs:
+  trigger-render-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "RENDER_DEPLOY_HOOK secret not set — skipping"
+            exit 0
+          fi
+          curl -sS -X POST "$HOOK"
+          echo "deploy triggered"
