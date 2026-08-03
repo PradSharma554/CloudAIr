@@ -118,8 +118,8 @@ export default async function LandingPage() {
                 body: "Every crawled page is served as readability-extracted markdown — no nav, no cookie banners, no JavaScript. What agents actually want.",
               },
               {
-                title: "x402 paywall (soon)",
-                body: "Monetization hooks are built in: flip a switch and agents without payment receive HTTP 402 with x402 payment instructions.",
+                title: "Survives free-tier infrastructure",
+                body: "Crash-resumable crawls via per-page checkpoints, stateless MCP, and quota-aware LLM usage — the whole stack runs at $0/month.",
               },
             ].map((f) => (
               <div key={f.title} className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">

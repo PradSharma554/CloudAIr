@@ -18,7 +18,6 @@ function rowToSite(row: Record<string, unknown>): Site {
     llmsTxt: row.llms_txt as string,
     llmsTxtGeneratedAt: row.llms_txt_generated_at as Date | null,
     settings: {
-      monetization: settings.monetization ?? { enabled: false },
       crawl: settings.crawl ?? {},
     },
     createdAt: row.created_at as Date,

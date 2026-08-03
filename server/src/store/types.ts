@@ -6,15 +6,7 @@ export interface User {
   name: string;
 }
 
-export interface Monetization {
-  enabled: boolean;
-  price_usd?: number;
-  network?: string;
-  pay_to?: string;
-}
-
 export interface SiteSettings {
-  monetization: Monetization;
   crawl: { max_pages?: number };
 }
 

@@ -25,7 +25,6 @@ export type Site = {
   mcp_url: string;
   llms_txt_generated: boolean;
   settings: {
-    monetization?: { enabled: boolean; price_usd?: number; network?: string; pay_to?: string };
     crawl?: { max_pages?: number };
   };
   created_at: string;

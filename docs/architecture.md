@@ -27,7 +27,7 @@ One Node.js process (TypeScript + Express, entrypoint `server/src/index.ts`) ser
   context (`res.locals`).
 
 Agent-facing middleware chain (in order):
-`siteCtx → agentIdentify → record → rateLimit → paywall → handler`
+`siteCtx → agentIdentify → record → rateLimit → handler`
 (`record` sits before the limiter so blocked 429s show up in analytics too.)
 
 ## Auth bridge (why the API never sees Auth.js cookies)

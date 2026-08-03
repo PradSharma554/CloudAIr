@@ -3,7 +3,7 @@
 // endpoints.
 //
 // Agent-facing middleware chain:
-//   siteCtx → agentIdentify → record → rateLimit → paywall → handler
+//   siteCtx → agentIdentify → record → rateLimit → handler
 import { timingSafeEqual } from "node:crypto";
 import express, { Router, type Express } from "express";
 import type pg from "pg";
@@ -23,7 +23,7 @@ import type { SiteStore } from "../store/sites.js";
 import { NotFoundError, type Crawl, type RateLimitRule, type Site, type SiteSettings } from "../store/types.js";
 import { checkOwnership } from "../verify.js";
 import { getSite, getUserId, wrap } from "./context.js";
-import { agentIdentify, ownedSiteCtx, paywall, rateLimit, record, requireAuth, siteCtx } from "./middleware.js";
+import { agentIdentify, ownedSiteCtx, rateLimit, record, requireAuth, siteCtx } from "./middleware.js";
 import { hostSlug, SiteCache } from "./resolver.js";
 
 export interface Deps {
@@ -127,7 +127,6 @@ function agentRouter(d: Deps, cache: SiteCache): Router {
   r.use(agentIdentify(d.classifier));
   r.use(record(d.recorder));
   r.use(rateLimit(d.limiter, d.rules));
-  r.use(paywall());
 
   r.get("/llms.txt", (req, res) => {
     const site = getSite(res);

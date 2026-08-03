@@ -139,19 +139,6 @@ export default function SettingsPage() {
         </div>
       </Card>
 
-      <Card title="Monetization">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-zinc-600">Charge agents for access (x402 micropayments)</p>
-            <p className="mt-1 text-xs text-zinc-400">
-              Coming soon — agents without payment will receive HTTP 402 with
-              payment instructions.
-            </p>
-          </div>
-          <Badge tone="gray">coming soon</Badge>
-        </div>
-      </Card>
-
       <Card title="Danger zone">
         <div className="flex items-center justify-between">
           <p className="text-sm text-zinc-600">

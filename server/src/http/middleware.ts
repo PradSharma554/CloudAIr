@@ -5,7 +5,6 @@ import type { AgentClassifier } from "../agents.js";
 import type { Limiter, RuleSource } from "../ratelimit.js";
 import type { Recorder } from "../recorder.js";
 import type { SiteStore } from "../store/sites.js";
-import { paywallCheck } from "../x402.js";
 import { getAgent, getSite, getUserId, setAgent, setSite, setUserId } from "./context.js";
 import type { SiteCache } from "./resolver.js";
 
@@ -122,13 +121,6 @@ export function rateLimit(limiter: Limiter, rules: RuleSource): RequestHandler {
     }
     res.status(429).json({ error: "rate limited", retry_after_seconds: result.retryAfterSeconds });
   });
-}
-
-/** Applies the x402 stub when the site has monetization enabled. */
-export function paywall(): RequestHandler {
-  return (req, res, next) => {
-    if (paywallCheck(getSite(res), req, res)) next();
-  };
 }
 
 const userCache = new LRUCache<string, string>({ max: 2048, ttl: 5 * 60_000 });

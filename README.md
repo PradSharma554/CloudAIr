@@ -6,8 +6,7 @@ Register your domain and CloudAIr becomes the interface AI agents use to read
 your site: an auto-generated `llms.txt`, clean markdown mirrors of every page,
 and a per-site **MCP endpoint** — with agent identification, per-agent rate
 limiting, and an analytics dashboard showing exactly which agents visited and
-what they read. An x402-style paywall (charge agents for access) is stubbed
-and coming next.
+what they read.
 
 Runs **entirely on free tiers**: TypeScript/Express API on Render, Next.js dashboard on
 Vercel, Neon Postgres, Gemini free tier for summaries. $0/month.
@@ -18,7 +17,7 @@ Vercel, Neon Postgres, Gemini free tier for summaries. $0/month.
                  ▼
    ┌──────────────────────────────┐
    │           CloudAIr           │   identify agent → rate limit →
-   │  /sites/{slug}/llms.txt      │   record analytics → (402 paywall)
+   │  /sites/{slug}/llms.txt      │   record analytics → serve
    │  /sites/{slug}/pages/*       │
    │  /sites/{slug}/mcp           │
    └──────────────┬───────────────┘
@@ -33,7 +32,7 @@ Vercel, Neon Postgres, Gemini free tier for summaries. $0/month.
 |---|---|
 | `server/` | TypeScript + Express API: crawler, llms.txt generator, MCP servers, agent ID, rate limits, analytics |
 | `web/` | Next.js 15 dashboard: OAuth login, site wizard, analytics charts, settings |
-| `docs/` | Architecture, agent signature maintenance, x402 design |
+| `docs/` | Architecture, agent signature maintenance |
 | `.github/workflows/` | CI + free cron (keepalive, weekly recrawl, analytics rollup) |
 
 ## Local development
