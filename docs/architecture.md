@@ -92,6 +92,11 @@ To add a signature, edit the JSON — no code changes needed.
 
 ## Rate limiting
 
+robots.txt is a request — compliance is voluntary, and the signature table's
+`respects_robots` field records which operators ignore it. Rate limiting is
+the enforced counterpart: robots.txt asks nicely; this is the version with
+teeth.
+
 In-memory token buckets (hand-rolled, `lru-cache`-bounded) keyed by
 `{siteID}|{agentName-or-class}`. Per-site rules in Postgres, cached 60 s,
 precedence: exact agent → class → site `*` → global default (60 rpm/burst 10).

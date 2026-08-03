@@ -8,6 +8,10 @@ and a per-site **MCP endpoint** — with agent identification, per-agent rate
 limiting, and an analytics dashboard showing exactly which agents visited and
 what they read.
 
+robots.txt is asking nicely — compliance is voluntary, and some AI crawlers
+ignore it. CloudAIr's per-agent rate limiting is the version with teeth:
+enforced at the server, no matter what the bot chooses to respect.
+
 Runs **entirely on free tiers**: TypeScript/Express API on Render, Next.js dashboard on
 Vercel, Neon Postgres, Gemini free tier for summaries. $0/month.
 
