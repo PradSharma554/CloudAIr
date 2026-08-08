@@ -1,4 +1,5 @@
--- +goose Up
+-- 0003: agent request analytics and rate limit rules.
+
 CREATE TABLE rate_limit_rules (
     id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     site_id      uuid NOT NULL REFERENCES sites(id) ON DELETE CASCADE,
@@ -34,8 +35,3 @@ CREATE TABLE agent_requests_daily (
     request_count int NOT NULL,
     PRIMARY KEY (site_id, day, agent_class, agent_name, kind)
 );
-
--- +goose Down
-DROP TABLE agent_requests_daily;
-DROP TABLE agent_requests;
-DROP TABLE rate_limit_rules;

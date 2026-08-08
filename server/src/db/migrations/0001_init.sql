@@ -1,4 +1,5 @@
--- +goose Up
+-- 0001: users and site ownership (auth, domain verification, llms.txt).
+
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE users (
@@ -26,7 +27,3 @@ CREATE TABLE sites (
 );
 
 CREATE INDEX sites_user_idx ON sites (user_id);
-
--- +goose Down
-DROP TABLE sites;
-DROP TABLE users;

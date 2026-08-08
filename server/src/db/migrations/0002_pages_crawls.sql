@@ -1,4 +1,5 @@
--- +goose Up
+-- 0002: crawl jobs and extracted page content (incl. full-text tsvector).
+
 CREATE TABLE pages (
     id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     site_id      uuid NOT NULL REFERENCES sites(id) ON DELETE CASCADE,
@@ -37,7 +38,3 @@ CREATE TABLE crawls (
 );
 
 CREATE INDEX crawls_site_idx ON crawls (site_id, created_at DESC);
-
--- +goose Down
-DROP TABLE crawls;
-DROP TABLE pages;
