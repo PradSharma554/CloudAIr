@@ -100,3 +100,39 @@ export class SiteStore {
     return rowToSite(r.rows[0]);
   }
 }
+
+/*
+                              SiteStore
+                                  │
+             ┌────────────────────┴────────────────────┐
+             │                                         │
+             ▼                                         ▼
+          USERS                                      SITES
+             │                                         │
+             ▼                                         ├── create()
+       upsertUser()                                    │   Create a site
+       Create/update                                   │
+       authenticated user                              ├── byId()
+                                                       │   Find by ID
+                                                       │
+                                                       ├── bySlug()
+                                                       │   Find by slug
+                                                       │
+                                                       ├── listByUser()
+                                                       │   Get user's sites
+                                                       │
+                                                       ├── listVerified()
+                                                       │   Get verified sites
+                                                       │
+                                                       ├── delete()
+                                                       │   Delete site
+                                                       │
+                                                       ├── markVerified()
+                                                       │   Mark ownership verified
+                                                       │
+                                                       ├── updateLlmsTxt()
+                                                       │   Save generated llms.txt
+                                                       │
+                                                       └── updateSettings()
+                                                           Save site settings
+*/
