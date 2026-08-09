@@ -65,3 +65,41 @@ export function extract(rawHtml: string, pageUrl: string): Extracted {
     links,
   };
 }
+
+/*
+                 Download webpage
+                        │
+                        ▼
+                    raw HTML
+                        │
+          ┌─────────────┴──────────────┐
+          │                            │
+          ▼                            ▼
+      Cheerio                      JSDOM
+          │                            │
+    ┌─────┴─────┐                      ▼
+    │           │                 Readability
+    ▼           ▼                      │
+  title     metaDesc             clean HTML
+    │                                    │
+    │                                    ▼
+    │                                Turndown
+    │                                    │
+    │                                    ▼
+    │                                Markdown
+    │                                    │
+    │                            ┌───────┴──────┐
+    │                            ▼              ▼
+    │                         200KB limit    SHA-256
+    │                            │              │
+    └──────────────┬─────────────┴──────────────┘
+                   │
+                   ▼
+              Extracted object
+                   │
+                   ├── title
+                   ├── metaDesc
+                   ├── markdown
+                   ├── hash
+                   └── links
+*/

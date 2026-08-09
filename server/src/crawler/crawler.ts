@@ -290,3 +290,55 @@ export function sameSite(site: Site, host: string): boolean {
   const h = host.toLowerCase();
   return h === site.domain || h === `www.${site.domain}` || h.endsWith(`.${site.domain}`);
 }
+
+
+/*
+                    start(site)
+                        │
+                        ▼
+                Is crawl running?
+                  │          │
+                 yes         no
+                  │          │
+                error        ▼
+                         create crawl
+                              │
+                              ▼
+                            run()
+                              │
+                    ┌─────────┴─────────┐
+                    │                   │
+             restore checkpoint    new crawl?
+                                        │
+                                        ▼
+                               sitemap + homepage
+                                        │
+                                        ▼
+                                  FRONTIER QUEUE
+                                        │
+                                        ▼
+                              ┌─────────────────┐
+                              │ take next URL   │
+                              └────────┬────────┘
+                                       │
+                                       ▼
+                                 robots.txt?
+                                  │       │
+                                block    allow
+                                  │       │
+                                skip      ▼
+                                     fetch HTML
+                                         │
+                                         ▼
+                                      extract
+                                    /    |     \
+                              content  metadata links
+                                 │                  │
+                                 ▼                  ▼
+                              save page       add to frontier
+                                                    │
+                                                    ▼
+                                             checkpoint
+                                                    │
+                                                    └──→ repeat
+*/
