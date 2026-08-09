@@ -57,3 +57,33 @@ async function fetchSitemapUrl(sitemapUrl: string, depth: number): Promise<strin
 function asArray(v: unknown): unknown[] {
   return Array.isArray(v) ? v : [v];
 }
+
+
+/*
+fetchSitemap("https://example.com")
+            │
+            ▼
+https://example.com/sitemap.xml
+            │
+            ▼
+       Download XML
+            │
+            ▼
+       Parse XML
+            │
+      ┌─────┴──────┐
+      │            │
+   <urlset>    <sitemapindex>
+      │            │
+      ▼            ▼
+ extract       extract sitemap
+ page URLs        URLs
+      │            │
+      │            ▼
+      │       recursively fetch
+      │       those sitemaps
+      │            │
+      └──────┬─────┘
+             ▼
+       Return max 200 URLs
+*/
