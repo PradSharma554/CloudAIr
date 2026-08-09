@@ -135,3 +135,35 @@ export class AnalyticsStore {
     }
   }
 }
+
+
+/*
+                              AnalyticsStore
+                                   │
+          ┌────────────────────────┼────────────────────────┐
+          │                        │                        │
+          ▼                        ▼                        ▼
+   STORE REQUEST EVENTS      ANALYZE REQUEST DATA      MANAGE RATE LIMITS
+          │                        │                        │
+          ▼                        ├── timeseries()        ├── listRateLimitRules()
+   insertEvents()                  │   Count requests     │   Read rules
+          │                        │   over time          │
+          ▼                        │                      ├── rateLimitRuleMap()
+   agent_requests                  └── top()              │   Build fast lookup Map
+   (raw request logs)                  Find top           │
+          │                            agents, paths,     └── replaceRateLimitRules()
+          │                            tools                  Replace site's rules
+          │
+          ▼
+   rollupAndPrune()
+          │
+          ├──────────────────┐
+          │                  │
+          ▼                  ▼
+   Summarize old       Delete raw events
+   requests by day     older than 30 days
+          │
+          ▼
+   agent_requests_daily
+   (daily request summaries)
+*/
