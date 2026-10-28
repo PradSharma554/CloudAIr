@@ -41,7 +41,7 @@ Vercel, Neon Postgres, Gemini free tier for summaries. $0/month.
 
 ## Local development
 
-Requirements: Node 18.18+ (20 recommended), Docker.
+Requirements: Node 22.22+ or 24.15+ (24 LTS recommended), Docker.
 
 ```bash
 # 1. Postgres

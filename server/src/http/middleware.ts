@@ -8,7 +8,7 @@ import type { SiteStore } from "../store/sites.js";
 import { getAgent, getSite, getUserId, setAgent, setSite, setUserId } from "./context.js";
 import type { SiteCache } from "./resolver.js";
 
-/** Express 4 does not catch async middleware rejections; this wrapper does. */
+/** Forwards async middleware rejections to the error handler. */
 function asyncMw(
   fn: (req: Request, res: Response, next: NextFunction) => Promise<void>
 ): RequestHandler {
@@ -20,7 +20,7 @@ function asyncMw(
 /** Resolves the site for agent-facing routes and 404s unverified sites. */
 export function siteCtx(cache: SiteCache): RequestHandler {
   return asyncMw(async (req, res, next) => {
-    const site = await cache.bySlug(req.params.slug);
+    const site = await cache.bySlug(String(req.params.slug));
     if (!site) {
       res.status(404).json({ error: "site not found" });
       return;
@@ -175,7 +175,7 @@ export function requireAuth(secret: string, sites: SiteStore): RequestHandler {
 export function ownedSiteCtx(sites: SiteStore): RequestHandler {
   return asyncMw(async (req, res, next) => {
     try {
-      const site = await sites.bySlug(req.params.slug);
+      const site = await sites.bySlug(String(req.params.slug));
       if (site.userId !== getUserId(res)) throw new Error("not owner");
       setSite(res, site);
       next();

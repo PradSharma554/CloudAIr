@@ -148,9 +148,12 @@ function agentRouter(d: Deps, cache: SiteCache): Router {
     res.end();
   }));
 
-  r.get("/pages/*", wrap(async (req, res) => {
+  // Express 5 wildcards must be named; the optional group keeps /pages and
+  // /pages/ matching (as /pages/* did on Express 4), mapped to "/".
+  r.get("/pages{/*path}", wrap(async (req, res) => {
     const site = getSite(res);
-    const path = "/" + String((req.params as Record<string, string>)[0] ?? "").replace(/^\/+/, "");
+    const segments = (req.params as { path?: string[] }).path ?? [];
+    const path = "/" + segments.join("/").replace(/^\/+/, "");
     try {
       const page = await d.pages.byPath(site.id, path);
       res

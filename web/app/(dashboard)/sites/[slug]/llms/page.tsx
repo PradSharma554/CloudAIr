@@ -31,7 +31,7 @@ export default function LLMSTxtPage() {
       <CopyField label="Public URL" value={data.public_url} />
       {data.llms_txt ? (
         <Card title={`llms.txt${data.generated_at ? ` — generated ${new Date(data.generated_at).toLocaleString()}` : ""}`}>
-          <pre className="max-h-[36rem] overflow-auto whitespace-pre-wrap rounded-lg bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-100">
+          <pre className="max-h-144 overflow-auto whitespace-pre-wrap rounded-lg bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-100">
             {data.llms_txt}
           </pre>
         </Card>

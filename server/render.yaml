@@ -13,7 +13,7 @@ services:
     healthCheckPath: /ping
     envVars:
       - key: NODE_VERSION
-        value: "20"
+        value: "24"
       - key: DATABASE_URL
         sync: false # paste your Neon connection string
       - key: API_JWT_SECRET

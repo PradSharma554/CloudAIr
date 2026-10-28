@@ -3,7 +3,7 @@ import { signIn } from "@/auth";
 export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+      <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-8 shadow-xs">
         <div className="mb-2 text-2xl font-semibold tracking-tight">CloudAIr</div>
         <p className="mb-8 text-sm text-zinc-500">
           The access layer between your website and AI agents — llms.txt, MCP,
